@@ -8,13 +8,27 @@ from geopy.distance import geodesic
 # Configuración de pantalla
 st.set_page_config(layout="wide", page_title="GEODNET MX - Folium Style")
 
+import os
+
 @st.cache_data
 def load_data():
+    # --- LÓGICA DE DETECCIÓN DE ENTORNO ---
+    # Si existe la unidad E:/, estamos en tu PC. Si no, estamos en la nube.
+    if os.path.exists('E:/I+D/DESARROLLO_SOFTWARE/MAPA_GEODNET/'):
+        base_path = 'E:/I+D/DESARROLLO_SOFTWARE/MAPA_GEODNET/'
+        path_csv = base_path + 'conteo_final_mexico.csv'
+        path_shp = base_path + 'MEXICO/estados-mexico.shp'
+        st.sidebar.info("💻 Corriendo en Local (Windows)")
+    else:
+        # Rutas relativas para Streamlit Cloud
+        path_csv = 'conteo_final_mexico.csv'
+        path_shp = 'MEXICO/estados-mexico.shp'
+        st.sidebar.info("☁️ Corriendo en la Nube (Deploy)")
+
     # 1. Cargar Estaciones
-    df = pd.read_csv('E:/I+D/DESARROLLO_SOFTWARE/MAPA_GEODNET/conteo_final_mexico.csv').dropna(subset=['lat', 'lng'])
+    df = pd.read_csv(path_csv).dropna(subset=['lat', 'lng'])
     
     # 2. Cargar Shapefile
-    path_shp = r'E:/I+D/DESARROLLO_SOFTWARE/MAPA_GEODNET/MEXICO/estados-mexico.shp'
     try:
         gdf = gpd.read_file(path_shp, encoding='latin-1', engine='fiona')
     except Exception:
@@ -23,8 +37,9 @@ def load_data():
     if gdf.crs != "EPSG:4326":
         gdf = gdf.to_crs(epsg=4326)
     
-    # Simplificar un poco para que el mapa no pese
+    # Simplificación para velocidad
     gdf['geometry'] = gdf['geometry'].simplify(0.005)
+    
     return df, gdf
 
 df_mx, gdf_estados = load_data()
