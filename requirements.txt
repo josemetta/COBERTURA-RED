@@ -6,4 +6,3 @@ streamlit-folium
 geopy
 fiona
 pyogrio
-shapetree
