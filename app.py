@@ -30,7 +30,7 @@ def load_data():
 df_mx, gdf_estados = load_data()
 
 # --- BARRA LATERAL ---
-st.sidebar.title("🛰️ Red GEODNET MX")
+st.sidebar.title("🛰️ SELECCIONA UN ESTADO MX")
 lista_estados = sorted(gdf_estados['nom_ent'].unique().tolist())
 estado_sel = st.sidebar.selectbox("📍 Selecciona un Estado:", ["México (Vista General)"] + lista_estados)
 
@@ -52,7 +52,7 @@ df_mx['dist_km'] = df_mx.apply(lambda r: geodesic((u_lat, u_lng), (r['lat'], r['
 top5 = df_mx.nsmallest(5, 'dist_km')
 
 # --- CREACIÓN DEL MAPA FOLIUM ---
-st.subheader(f"🗺️ Cobertura de Red: {estado_sel}")
+st.subheader(f"🗺️ Cobertura de Red GEODNET: {estado_sel}")
 
 # Crear el objeto mapa de Folium con el estilo que te gusta
 m = folium.Map(location=[view_lat, view_lng], zoom_start=view_zoom, tiles='OpenStreetMap')
